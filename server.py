@@ -21,9 +21,9 @@ def receive_data(conn):
         if not data:
             break
         msg += data.decode()
-        print(f'Получено сообщение: {msg}')
         conn.send(data)
-        print(f'Отправлено сообщение: {msg}')
+    print(f'Получено сообщение: {msg}')
+    print(f'Отправлено сообщение: {msg}')
 
 
 def end_session(conn):
