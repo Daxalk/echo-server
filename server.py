@@ -1,10 +1,11 @@
 import socket
+import config
 
 
 def port_listening(sock):
-    address, port = '', 9090
+    address, port = '', config.port
     sock.bind((address, port))
-    sock.listen(1)
+    sock.listen(0)
     print(f'Началось прослушивание порта {port}')
 
 
@@ -16,13 +17,18 @@ def connection(sock):
 
 def receive_data(conn):
     msg = ''
-    while True:
+    while not(config.breakmsg in msg):
         data = conn.recv(1024)
         if not data:
             break
         msg += data.decode()
-        conn.send(data)
+    msg = msg.replace(config.breakmsg, '',)
     print(f'Получено сообщение: {msg}')
+    return msg
+
+
+def send_data(conn, msg):
+    conn.send(msg.encode())
     print(f'Отправлено сообщение: {msg}')
 
 
@@ -38,13 +44,14 @@ def stop(sock):
 
 def main():
     sock = socket.socket()
-    print('Сервер запустился')
-
+    print('Сервер запустился') 
     port_listening(sock)
     conn = connection(sock)
-    receive_data(conn)
+    msg = receive_data(conn)
+    send_data(conn, msg)
     end_session(conn)
     stop(sock)
 
 
 main()
+
