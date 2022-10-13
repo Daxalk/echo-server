@@ -1,4 +1,5 @@
 import socket
+import config
 
 
 def connection(sock, address, port):
@@ -9,11 +10,18 @@ def connection(sock, address, port):
 def send_data(sock, data):
     sock.send(data.encode())
     print(f'Отправлены данные: {data}')
+    sock.send(config.breakmsg.encode())
 
 
 def receive_data(sock):
-    data = sock.recv(1024)
-    print(f'Получено сообщение: {data.decode()}')
+    msg = ''
+    while True:
+        data = sock.recv(1024)
+        if not data:
+            break
+        msg += data.decode()
+
+    print(f'Получено сообщение: {msg}')
     return data
 
 
@@ -24,13 +32,13 @@ def end_session(sock):
 
 def main():
     sock = socket.socket()
-    address, port = 'localhost', 9090
+    address, port = 'localhost', config.port
     connection(sock, address, port)
-
-    msg = 'ABCdefG1231232131'
+    msg = config.msg
     send_data(sock, msg)
     receive_data(sock)
     end_session(sock)
 
 
 main()
+
